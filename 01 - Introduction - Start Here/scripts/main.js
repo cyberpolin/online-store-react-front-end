@@ -10,6 +10,16 @@ var Router = ReactRouter.Router,
 
 var h = require('./helpers')
 
+// Fire Base
+var rebase = require('re-base')
+var base = rebase.createClass({
+  apiKey: "ysd9F9y4Eeoc1mgcurN65ngDUBsYjdIGAZxE9WP2",
+  authDomain: "online-store-24885.firebaseapp.com",
+  databaseURL: "https://online-store-24885.firebaseio.com",
+  storageBucket: "online-store-24885.appspot.com",
+
+})
+
 
 // var browserHistory = require('history/lib/createBrowserHistory')// This is a function I am just executing here stead of 86L
 
@@ -23,6 +33,21 @@ var App = React.createClass({
       orders : {}
     }
   },
+  componentDidMount :function(){
+    base.syncState(this.props.params.storeId + '/fishes', {
+      context : this,
+      state : 'fishes'
+    })
+  },
+  componentWillUpdate :function(nextProps, nextState){
+    base.syncState(this.props.params.storeId + '/fishes', {
+      context : this,
+      state : 'fishes'
+    })
+    var item = ('order-' + this.props.params.storeId, JSON.stringify(nextState.order))
+    console.log(nextState.order)
+    localStorage.setItem('order-' + this.props.params.storeId, JSON.stringify(nextState.order))
+  },
   addFish : function(fish){
     var timestamp = new Date().getTime()
     this.state.fishes['fish-' + timestamp] = fish
@@ -30,7 +55,6 @@ var App = React.createClass({
   },addOrder : function(fish){
     this.state.orders[fish] = this.state.orders[fish]+1 || 1
     this.setState({ orders: this.state.orders })
-    console.log(this.state.orders)
   },
   loadSamples : function(){
     this.setState({ fishes : require('./sample-fishes')})
@@ -74,36 +98,47 @@ var Header = React.createClass({
 
 // Order component
 var Order = React.createClass({
-  createOrder : function(key){
-    var orders = this.props.orders
-    var fishes = this.props.fishes
-    var ordersKeys = Object.keys(orders)
+  renderOrderItems:function(key){
+    var order = this.props.orders[key]
+    var fish = this.props.fishes[key]
 
-    var total = ordersKeys.reduce(function(p, k){
-      console.log(p)
-      var fish = fishes[k]
-      var count = orders[k]
-      if(fish){
-        return p = (count * parseInt(fish.price) || 0)
-      }
-      return p
-    })
     return (
-      <div className='order-wrap'>
-        <h2 className='order-title'>Your order</h2>
-        <ul className='order'>
-          <li className='total'>
-            <strong>Total:</strong>
-            {h.formatPrice(total)}
-          </li>
-        </ul>
-      </div>
+      <li key = {key}>
+      {order} lbs
+       {fish.name}
+      <span className='price'>{h.formatPrice(order * fish.price)}</span>
+      </li>
     )
+
   },
+
   render : function(){
-    return (
-      <ul>{Object.keys(this.props.orders).map(this.createOrder)}</ul>
-    )
+      var orders = this.props.orders
+      var fishes = this.props.fishes
+      var ordersKeys = Object.keys(orders)
+
+      var total = ordersKeys.reduce((p, k)=>{
+
+        var fish = fishes[k]
+        var count = orders[k]
+        var isAvailabe = fish && fish.status === 'available'
+        if(fish && isAvailabe){
+          return p + (count * parseInt(fish.price) || 0)
+        }
+        return p
+      },0)
+      return (
+        <div className='order-wrap'>
+          <h2 className='order-title'>Your order</h2>
+          <ul className='order'>
+            { ordersKeys.map(this.renderOrderItems) /* Every time it is render, render the list of items*/}
+            <li className='total'>
+              <strong>Total:</strong>
+              {h.formatPrice(total)}
+            </li>
+          </ul>
+        </div>
+      )
   }
 })
 
@@ -195,21 +230,19 @@ var Fish = React.createClass({
   }
 })
 
-// 404 component
 var NotFound = React.createClass({
   render: function(){
-    return(
-      <h1> Can't touch this.. </h1>
+    return (
+      <h1> Can not touch </h1>
     )
   }
 })
-
 // Routes
 var routes = (
   <Router history={browserHistory}>
     <Route path='/' component={StorePiker}/>
     <Route path='/store/:storeId' component={App}/>
-    {/* <Route path='*' component={NotFound}/> */}
+    <Route path='*' component={NotFound}/>
   </Router>
 )
 
