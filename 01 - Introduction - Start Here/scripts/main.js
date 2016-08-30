@@ -27,11 +27,10 @@ var App = React.createClass({
     var timestamp = new Date().getTime()
     this.state.fishes['fish-' + timestamp] = fish
     this.setState({ fishes : this.state.fishes })
-  },
-  addOrder : function(order){
-    var timestamp = new Date().getTime()
-    this.state.orders['order-' + timestamp] = order
+  },addOrder : function(fish){
+    this.state.orders[fish] = this.state.orders[fish]+1 || 1
     this.setState({ orders: this.state.orders })
+    console.log(this.state.orders)
   },
   loadSamples : function(){
     this.setState({ fishes : require('./sample-fishes')})
@@ -48,7 +47,7 @@ var App = React.createClass({
             {Object.keys(this.state.fishes).map(this.renderFish)}
           </ul>
         </div>
-        <Order orders={this.state.orders}/>
+        <Order fishes={this.state.fishes} orders={this.state.orders}/>
         <Inventory addFish={this.addFish} loadSamples={this.loadSamples}/>
       </div>
     )
@@ -77,8 +76,29 @@ var Header = React.createClass({
 var Order = React.createClass({
   createOrder : function(key){
     var orders = this.props.orders
+    var fishes = this.props.fishes
+    var ordersKeys = Object.keys(orders)
 
-    return <li>{key}</li>
+    var total = ordersKeys.reduce(function(p, k){
+      console.log(p)
+      var fish = fishes[k]
+      var count = orders[k]
+      if(fish){
+        return p = (count * parseInt(fish.price) || 0)
+      }
+      return p
+    })
+    return (
+      <div className='order-wrap'>
+        <h2 className='order-title'>Your order</h2>
+        <ul className='order'>
+          <li className='total'>
+            <strong>Total:</strong>
+            {h.formatPrice(total)}
+          </li>
+        </ul>
+      </div>
+    )
   },
   render : function(){
     return (
@@ -154,17 +174,7 @@ var AddFishForm = React.createClass({
 
 var Fish = React.createClass({
   placeOrder : function(){
-    var fish = this.props.details
-    var order = {
-      index : this.props.index,
-      name : fish.name,
-      desc : fish.desc,
-      status : fish.status,
-      price : fish.price,
-      image : fish.image,
-    }
-    // console.log(order)
-    this.props.addOrder(order)
+    this.props.addOrder(this.props.index)
   },
   render : function(){
     var fish = this.props.details
