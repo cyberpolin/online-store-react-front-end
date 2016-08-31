@@ -89,7 +89,7 @@ var App = React.createClass({
     return (
       <div className='catch-of-the-day'>
         <div className='menu'>
-          <Header tagline='Fresh Seafood Market' />
+          <Header tagline='Lo mejor en desarmadores' />
           <ul className='list-of-fishes'>
             {Object.keys(this.state.fishes).map(this.renderFish)}
           </ul>
@@ -107,12 +107,7 @@ var Header = React.createClass({
   render : function(){
     return (
       <header className='top'>
-        <h1>Catch
-          <span className='ofThe'>
-            <span className='of'>of</span>
-            <span className='the'>the</span>
-          </span>
-          Day</h1>
+        <h1>Ferreteria</h1>
         <h3 className='tagline'><span>{this.props.tagline}</span></h3>
       </header>
     )
@@ -127,7 +122,7 @@ var Order = React.createClass({
     var removeButton = <button onClick={this.props.removeFromOrder.bind(null, key)}>x</button>
     if (!fish){
       return (
-        <li key={key}>Sorry, item no longer available{removeButton}</li>
+        <li key={key}>Producto agotado!{removeButton}</li>
 
       )
 
@@ -135,7 +130,7 @@ var Order = React.createClass({
 
     return (
       <li key = {key}>
-      {order} lbs
+      {order} pza
        {fish.name}
       <span className='price'>{h.formatPrice(order * fish.price)}</span>
       {removeButton}
@@ -161,7 +156,7 @@ var Order = React.createClass({
       },0)
       return (
         <div className='order-wrap'>
-          <h2 className='order-title'>Your order</h2>
+          <h2 className='order-title'>Tu orden</h2>
           <ul className='order'>
             { ordersKeys.map(this.renderOrderItems) /* Every time it is render, render the list of items*/}
             <li className='total'>
@@ -183,12 +178,12 @@ var Inventory = React.createClass({
         <input type='text' valueLink={linkState('fishes.'+ key +'.name')}/>
         <input type='text' valueLink={linkState('fishes.'+ key +'.price')}/>
         <select valueLink={linkState('fishes.'+ key +'.status')}>
-          <option value='unavailable'>Sold Out!</option>
+          <option value='unavailable'>Agotado!</option>
           <option value='available'>Fresh!</option>
         </select>
         <textarea valueLink={linkState('fishes.'+ key +'.desc')}></textarea>
         <input type='text' valueLink={linkState('fishes.'+ key +'.image')}/>
-        <button onClick={this.props.removeFish.bind(null, key)}>Remove </button>
+        <button onClick={this.props.removeFish.bind(null, key)}>Eliminar </button>
       </div>
     )
   },
@@ -200,7 +195,7 @@ var Inventory = React.createClass({
         Object.keys(this.props.fishes).map(this.renderInventory)
       }
         <AddFishForm {...this.props} />
-        <button onClick={this.props.loadSamples}>Load Sample fishes</button>
+        <button onClick={this.props.loadSamples}>Cargar datos exemplo</button>
       </div>
     )
   }
@@ -248,11 +243,11 @@ var AddFishForm = React.createClass({
         <input type='text' ref='price' placeholder='Fish Price'/>
         <select ref = 'status'>
           <option value='available'>Fresh!</option>
-          <option value='unavailable'>Sold Out</option>
+          <option value='unavailable'>Agotado</option>
         </select>
         <textarea type='text' ref='desc' placeholder='Desc'></textarea>
         <input type='text' ref='image' placeholder='URL to image'/>
-        <button type='submit'> + Add Item </button>
+        <button type='submit'> + Agregar Producto </button>
       </form>
     )
   }
@@ -265,7 +260,7 @@ var Fish = React.createClass({
   render : function(){
     var fish = this.props.details
     var isAvailabe = (fish.status == 'available' ? true : false)
-    var btnText = (isAvailabe == true ? 'Add to cart' : 'Sold Out')
+    var btnText = (isAvailabe == true ? 'Comprar' : 'Agotado')
 
     return(
       <li className='menu-fish'>
