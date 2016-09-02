@@ -40,10 +40,6 @@ var App = React.createClass({
     })
   },
   componentWillUpdate :function(nextProps, nextState){
-    base.syncState(this.props.params.storeId + '/fishes', {
-      context : this,
-      state : 'fishes'
-    })
     var item = ('order-' + this.props.params.storeId, JSON.stringify(nextState.order))
     console.log(nextState.order)
     localStorage.setItem('order-' + this.props.params.storeId, JSON.stringify(nextState.order))
