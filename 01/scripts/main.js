@@ -217,7 +217,8 @@ var StorePiker = React.createClass({
   render : function(){
     return(
       <form className='store-selector' onSubmit={this.goToStore}>
-        <h2>Pick a store</h2>
+        <h2>Como quieres que se llame tu tienda?</h2>
+        <span className='tip'>el nombre no debe llevar espacio, en lugar de ello usa guion medio -</span>
         <input type='text' ref='storeId' defaultValue={h.getFunName()} required/>
         <input type='Submit'/>
       </form>

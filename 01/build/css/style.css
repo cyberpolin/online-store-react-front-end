@@ -644,3 +644,8 @@ input[type=submit].twitter:after {
   text-align: center;
   font-size: 3rem;
 }
+.store-selector .tip {
+  font-size: 60%;
+  align: center;
+  margin: 1em auto;
+}
